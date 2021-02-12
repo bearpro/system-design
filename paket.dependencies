@@ -1,0 +1,14 @@
+source https://api.nuget.org/v3/index.json
+
+nuget FSharp.Core
+nuget Suave
+nuget Simple.Migrations
+nuget Npgsql
+nuget Dapper
+
+clitool Microsoft.DotNet.Watcher.Tools
+
+group Build
+  source https://api.nuget.org/v3/index.json
+
+  nuget FAKE
