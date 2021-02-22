@@ -6,3 +6,6 @@ paket-files/
 .vs/
 
 mono_crash*
+.ionide
+
+temp*
