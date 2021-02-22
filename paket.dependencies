@@ -1,6 +1,6 @@
 source https://api.nuget.org/v3/index.json
 
-nuget FSharp.Core
+nuget FSharp.Core 5.0.1
 nuget Suave
 nuget Simple.Migrations
 nuget Npgsql

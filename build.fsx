@@ -4,7 +4,7 @@ open System
 
 open Fake
 
-let appPath = "./src/system_design/" |> FullName
+let appPath = "./src/SystemDesign.App/" |> FullName
 
 let dotnetcliVersion = DotNetCli.GetDotNetSDKVersionFromGlobalJson()
 

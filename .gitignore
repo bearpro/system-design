@@ -1,0 +1,8 @@
+.fake/
+obj/
+bin/
+packages/
+paket-files/
+.vs/
+
+mono_crash*

@@ -8,11 +8,12 @@ open Suave
 let main argv = 
     let cts = new CancellationTokenSource()
     let conf = { defaultConfig with cancellationToken = cts.Token }
-    let listening, server = startWebServerAsync conf (Successful.OK "Hello World")
+    let listening, server = startWebServerAsync conf Api.entryPoint
 
     Async.Start(server, cts.Token)
     printfn "Make requests now"
     Console.ReadKey true |> ignore
+    printfn $"{1}"
 
     cts.Cancel()
 
