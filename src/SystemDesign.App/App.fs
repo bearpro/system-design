@@ -2,25 +2,11 @@ module App
 
 open Microsoft.AspNetCore.Http
 open Giraffe
-open Models
 open FSharp.Control.Tasks
 
 type DbContext = Database.Database.dataContext
 
 let invar = Some System.Globalization.CultureInfo.InvariantCulture
-
-let indexHandler (name : string) =
-    let greetings = sprintf "Hello %s, from Giraffe!" name
-    let model     = { Text = greetings }
-    let view      = Views.index model
-    htmlView view
-
-let withService<'Service> (consumer: 'Service -> HttpHandler) : HttpHandler =
-    fun (next: HttpFunc) (ctx: HttpContext) ->
-        let service = ctx.GetService<'Service>()
-        consumer service next ctx
-
-let withDbContext = withService<DbContext>
 
 module CrudCommon =
     let getAll<'entity> all : HttpHandler =
@@ -74,42 +60,56 @@ let getStudentsHandler : HttpHandler =
             | None -> Database.Student.all db
         json result next ctx
 
+let getJournalHandler : HttpHandler =
+    fun (next: HttpFunc) (ctx: HttpContext) -> 
+        let db = ctx.GetService<DbContext>()
+        let studentFilter = ctx.TryGetQueryStringValue "studentId" |> Option.map int
+        let groupFilter = ctx.TryGetQueryStringValue "groupId" |> Option.map int
+        let result = 
+            match studentFilter, groupFilter with
+            | Some studentId, _ -> Database.Journal.findByStudentId studentId db
+            | None, Some groupId -> Database.Journal.findByGroupId groupId db
+            | None, None -> Database.Journal.all db
+        json result next ctx
+
 open CrudCommon
 
 let webApp : HttpFunc -> HttpContext -> HttpFuncResult =
     choose [
-        GET >=>
-            choose [
-                route "/" >=> indexHandler "world"
-                routef "/hello/%s" indexHandler
-            ]
         subRoute "/api" (
             choose [
                 subRoute "/student" (
                     choose [
-                        PUT >=> addEntity Database.Student.add
+                        POST >=> addEntity Database.Student.add
+                        PUT >=> subRoutef "/%i" (updateEntity Database.Student.update)
+                        DELETE >=> subRoutef "/%i" (deleteEntityById Database.Student.delete)
                         GET >=> choose [
                             subRoute "/all" getStudentsHandler
                             subRoutef "/%i" (getEntityById Database.Student.findById)
                         ]
-                        POST >=> subRoutef "/%i" (updateEntity Database.Student.update)
-                        DELETE >=> subRoutef "/%i" (deleteEntityById Database.Student.delete)
                     ]
                 )
                 subRoute "/study_group" (
                      choose [
-                        PUT >=> addEntity Database.StudyGroup.add
+                        POST >=> addEntity Database.StudyGroup.add
+                        PUT >=> subRoutef "/%i" (updateEntity Database.StudyGroup.update)
+                        DELETE >=> subRoutef "/%i" (deleteEntityById Database.StudyGroup.delete)
                         GET >=> choose [
                             subRoute "/all" (getAll Database.StudyGroup.all)
                             subRoutef "/%i" (getEntityById Database.StudyGroup.findById)
                         ]
-                        POST >=> subRoutef "/%i" (updateEntity Database.StudyGroup.update)
-                        DELETE >=> subRoutef "/%i" (deleteEntityById Database.StudyGroup.delete)
                     ]
                 )
-                subRoute "/study_plan" (
+                subRoute "journal" (
                     choose [
-                        GET >=> withDbContext(Database.StudyPlan.all >> json) 
-                    ])
+                        PUT >=> subRoutef "/%i" (updateEntity Database.Journal.update)
+                        POST >=> addEntity Database.Journal.add
+                        GET >=> choose [
+                            subRoute "/all" getJournalHandler
+                            subRoutef "/%i" (getEntityById Database.Student.findById)
+                        ]
+                    ]
+                )
             ])
+        GET >=> text "This service is provides HTTP-API. Source code and documetation can be found here: https://github.com/BearPro/system-design"
         setStatusCode 404 >=> text "Not Found" ]

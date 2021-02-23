@@ -1,8 +1,9 @@
 module Database
 
 open FSharp.Data.Sql
+open FSharp.Data.LiteralProviders
 
-type Database = SqlDataProvider<Common.DatabaseProviderTypes.MYSQL, "Server=********">
+type Database = SqlDataProvider<Common.DatabaseProviderTypes.MYSQL, Env.SYSTEMDESIGN_CONN_STR.Value>
 
 type DbContext = Database.dataContext
 
@@ -135,3 +136,66 @@ module Student =
         query { for student in ctx.Systemdesign.Student do 
                 where (student.StudyGroupId = groupId) 
                 select student } |> Seq.map toRecord |> List.ofSeq
+
+type JournalItem = 
+  { Id: int
+    StudentId: int
+    StudyPlanId: int
+    InTime: uint64
+    Count: int
+    MarkId: int }
+
+module Journal =
+    let toRecord (source: DbContext.``systemdesign.journalEntity``) =
+      { Id = source.Id
+        StudentId = source.StudentId
+        StudyPlanId = source.StudyPlanId
+        InTime = source.InTime 
+        Count = source.Count
+        MarkId = source.MarkId }
+
+    let all (ctx: DbContext) =
+        ctx.Systemdesign.Journal |> Seq.map toRecord |> List.ofSeq
+
+    let findById id (ctx: DbContext) =
+        query { for journalItem in ctx.Systemdesign.Journal do 
+                where (journalItem.Id = id) 
+                select (Some(toRecord journalItem)) 
+                exactlyOneOrDefault } 
+    
+    let findByStudentId studentId (ctx: DbContext) =
+        query { for journalItem in ctx.Systemdesign.Journal do 
+                where (journalItem.StudentId = studentId) 
+                select (toRecord journalItem) } |> List.ofSeq
+    
+    let findByGroupId groupId (ctx: DbContext) =
+        let studentIds = Student.findByGroupId groupId ctx |> List.map (fun x -> x.Id)
+        let journalItems = all ctx |> List.where (fun x -> List.contains x.StudentId studentIds)
+        journalItems
+
+    let add journalItem (ctx: DbContext) =
+        let row = ctx.Systemdesign.Journal.Create()
+        row.StudentId <- journalItem.StudentId 
+        row.StudyPlanId <- journalItem.StudyPlanId 
+        row.InTime <- journalItem.InTime 
+        row.MarkId <- journalItem.MarkId 
+        ctx.SubmitUpdatesAsync() |> Async.Catch
+
+    let update journalItemId journalItem (ctx: DbContext) =
+        let oldStudent = query { for s in ctx.Systemdesign.Journal do
+                                 where (s.Id = journalItemId) 
+                                 select (Some s) 
+                                 exactlyOneOrDefault }
+        async {
+            match oldStudent with
+            | None -> return Error ($"Student with id {journalItemId} not found.")
+            | Some foundStudent -> 
+                foundStudent.StudentId <- journalItem.StudentId 
+                foundStudent.StudyPlanId <- journalItem.StudyPlanId 
+                foundStudent.InTime <- journalItem.InTime 
+                foundStudent.MarkId <- journalItem.MarkId 
+                let! updateResult = ctx.SubmitUpdatesAsync() |> Async.Catch
+                match updateResult with
+                | Choice1Of2 () -> return Ok()
+                | Choice2Of2 e -> return Error ($"{e}")
+        }

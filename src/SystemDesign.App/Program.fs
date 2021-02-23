@@ -10,9 +10,6 @@ open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 open Giraffe
 
-open Models
-open Views
-
 let webApp = App.webApp
 
 let errorHandler (ex : Exception) (logger : ILogger) =
