@@ -1,0 +1,20 @@
+{
+  "private": true,
+  "scripts": {
+    "start": "fable watch src -s --run webpack-dev-server"
+  },
+  "devDependencies": {
+    "webpack": "^4.46.0",
+    "webpack-cli": "^3.3.0",
+    "webpack-dev-server": "^3.11.2"
+  },
+  "name": "SimpleFableApp",
+  "version": "1.0.0",
+  "dependencies": {
+    "fable-core": "^0.7.30",
+    "fable-powerpack": "^0.0.20",
+    "fable-react": "^0.8.6",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  }
+}

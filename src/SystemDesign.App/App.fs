@@ -100,7 +100,7 @@ let webApp : HttpFunc -> HttpContext -> HttpFuncResult =
                         ]
                     ]
                 )
-                subRoute "journal" (
+                subRoute "/journal" (
                     choose [
                         PUT >=> subRoutef "/%i" (updateEntity Database.Journal.update)
                         POST >=> addEntity Database.Journal.add

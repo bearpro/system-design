@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Journal.fs" />
+    <Compile Include="App.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Fable.Browser.Dom" Version="2.2.0" />
+    <PackageReference Include="Fable.Core" Version="3.2.3" />
+    <PackageReference Include="Fable.Elmish" Version="3.1.0" />
+    <PackageReference Include="Fable.Elmish.React" Version="3.0.1" />
+    <PackageReference Include="Thoth.Fetch" Version="2.0.0" />
+    <Reference Include="../node_modules/fable-powerpack/Fable.PowerPack.dll" />
+    <Reference Include="../node_modules/fable-react/Fable.React.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SystemDesign.Common\SystemDesign.Common.fsproj" />
+  </ItemGroup>
+</Project>

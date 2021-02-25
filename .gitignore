@@ -4,8 +4,8 @@ bin/
 packages/
 paket-files/
 .vs/
+node_modules/
+.ionide/
 
 mono_crash*
-.ionide
-
 temp*
