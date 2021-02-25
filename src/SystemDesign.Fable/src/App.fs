@@ -26,7 +26,7 @@ let update msg model =
 
 let view model dispatch =
     div 
-        []
+        [ Class "container" ]
         [
             Journal.view model.JournalModel (JournalMsg >> dispatch)
         ]

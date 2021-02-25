@@ -106,10 +106,11 @@ let webApp : HttpFunc -> HttpContext -> HttpFuncResult =
                         POST >=> addEntity Database.Journal.add
                         GET >=> choose [
                             subRoute "/all" getJournalHandler
-                            subRoutef "/%i" (getEntityById Database.Student.findById)
+                            subRoutef "/%i" (getEntityById Database.Journal.findById)
                         ]
                     ]
                 )
+                subRoute "/study_plan" (choose [GET >=> getAll Database.StudyPlan.all])
             ])
         GET >=> text "This service is provides HTTP-API. Source code and documetation can be found here: https://github.com/BearPro/system-design"
         setStatusCode 404 >=> text "Not Found" ]
