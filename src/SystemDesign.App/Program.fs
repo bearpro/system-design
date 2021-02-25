@@ -35,7 +35,8 @@ let configureApp (app : IApplicationBuilder) =
         app .UseGiraffeErrorHandler(errorHandler)
             .UseHttpsRedirection())
         .UseCors(configureCors)
-        .UseStaticFiles()
+        .UseStaticFiles("/app")
+        .UseDefaultFiles()
         .UseGiraffe(webApp)
 
 let configureServices (services : IServiceCollection) =
