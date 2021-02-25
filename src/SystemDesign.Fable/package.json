@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "start": "fable watch src -s --run webpack-dev-server"
+    "start": "fable watch src -s --run webpack-dev-server --host 0.0.0.0"
   },
   "devDependencies": {
     "webpack": "^4.46.0",
