@@ -5,11 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Library.fs" />
+    <Compile Include="ServiceBusClient.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FSharp.Json" Version="0.4.0" />
+    <PackageReference Include="SchlenkR.FsHttp" Version="5.0.0" />
   </ItemGroup>
 
 </Project>

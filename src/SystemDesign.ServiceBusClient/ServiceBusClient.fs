@@ -1,6 +1,8 @@
 ﻿namespace SystemDesign
 
 open FSharp.Json
+open FsHttp
+open FsHttp.DslCE
 
 module ServiceBusClient =
 
@@ -40,3 +42,13 @@ module ServiceBusClient =
         let stringData = data |> Option.map Json.serialize
         let message = Json.serialize (makeMassage stringData)
         message
+
+    let send payload =
+        http {
+            POST "http://up-lab1.mirea.ru/bus"
+            Accept "text/plain, application/json, application/*+json, */*"
+            UserAgent "Java/15"
+            Connection "keep-alive"
+            body
+            json payload
+        }

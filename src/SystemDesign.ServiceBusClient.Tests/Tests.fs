@@ -43,3 +43,12 @@ let ``Json for INIT_INSTANCE format correct`` () =
   "data": null
 }"""
     Assert.Equal(expectedJson, json)
+
+[<Fact>]
+let ``HTTP request right`` () =
+    let student = { Id = -1; Surname = "Kek"; Name = "Lol"; SecondName = "Top"; StudyGroupId = -1 }
+    let data = Some { IsBinariesChanged = false; EntityName = "student"; PlainData = student; BinaryLinks = Map.empty }
+    let makeMassage stringData = { From = "1337"; To = "dean"; Subject = AddRow; Data = stringData }
+    let json = serializeToMessage data makeMassage
+    send json
+    Assert.True(true)
